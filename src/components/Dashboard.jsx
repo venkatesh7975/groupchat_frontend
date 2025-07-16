@@ -25,7 +25,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
 
   const checkPaymentStatus = async () => {
     try {
-      const response = await axios.get('/api/payment/status', {
+      const response = await axios.get('https://groupchat-with-payment.onrender.com/api/payment/status', {
         withCredentials: true
       });
       
@@ -57,7 +57,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
     }
 
     try {
-      const response = await axios.put('/api/user/profile', { name }, {
+      const response = await axios.put('https://groupchat-with-payment.onrender.com/api/user/profile', { name }, {
         withCredentials: true
       });
       
@@ -81,7 +81,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
     formData.append('profilePic', file);
 
     try {
-      const response = await axios.put('/api/user/profile/picture', formData, {
+      const response = await axios.put('https://groupchat-with-payment.onrender.com/api/user/profile/picture', formData, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -107,7 +107,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
 
     try {
       // Create payment order
-      const orderResponse = await axios.post('/api/payment/create-order', {}, {
+      const orderResponse = await axios.post('https://groupchat-with-payment.onrender.com/api/payment/create-order', {}, {
         withCredentials: true
       });
 
@@ -124,7 +124,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
         handler: async function (response) {
           try {
             // Verify payment on backend
-            const verifyResponse = await axios.post('/api/payment/verify', {
+            const verifyResponse = await axios.post('https://groupchat-with-payment.onrender.com/api/payment/verify', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature

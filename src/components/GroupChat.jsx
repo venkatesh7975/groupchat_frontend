@@ -114,7 +114,7 @@ const GroupChat = ({ user }) => {
   const loadExistingMessages = async () => {
     setLoadingMessages(true);
     try {
-      const response = await axios.get('/api/chat/messages', {
+      const response = await axios.get('https://groupchat-with-payment.onrender.com/api/chat/messages', {
         withCredentials: true
       });
       

@@ -16,7 +16,7 @@ const ForgotPassword = () => {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/auth/forgot-password', { email });
+      const response = await axios.post('https://groupchat-with-payment.onrender.com/api/auth/forgot-password', { email });
       setMessage(response.data.message);
       setOtpSent(true);
     } catch (error) {

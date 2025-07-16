@@ -12,8 +12,8 @@ Create a `.env` file in the frontend directory with the following variables:
 
 ```env
 # API Configuration
-VITE_API_URL=http://localhost:5000
-VITE_SOCKET_URL=http://localhost:5000
+VITE_API_URL=https://groupchat-with-payment.onrender.com
+VITE_SOCKET_URL=https://groupchat-with-payment.onrender.com
 
 # App Configuration
 VITE_APP_NAME=Group Chat App
@@ -43,8 +43,8 @@ const socketUrl = config.SOCKET_URL;
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `VITE_API_URL` | Backend API URL | `http://localhost:5000` |
-| `VITE_SOCKET_URL` | WebSocket server URL | `http://localhost:5000` |
+| `VITE_API_URL` | Backend API URL | `https://groupchat-with-payment.onrender.com` |
+| `VITE_SOCKET_URL` | WebSocket server URL | `https://groupchat-with-payment.onrender.com` |
 | `VITE_APP_NAME` | Application name | `Group Chat App` |
 | `VITE_APP_VERSION` | Application version | `1.0.0` |
 

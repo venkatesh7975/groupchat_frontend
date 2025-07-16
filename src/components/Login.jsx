@@ -33,8 +33,8 @@ const Login = ({ onLogin, authStep, setAuthStep }) => {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/auth/login', formData);
-      setEmail(formData.email);
+        const response = await axios.post('https://groupchat-with-payment.onrender.com/api/auth/login', formData);
+        setEmail(formData.email);
       setMessage(response.data.message);
       setAuthStep('otp');
     } catch (error) {

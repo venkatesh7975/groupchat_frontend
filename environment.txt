@@ -1,5 +1,5 @@
 # Frontend Environment Variables
-VITE_API_URL=http://localhost:5000
-VITE_SOCKET_URL=http://localhost:5000
+VITE_API_URL=https://groupchat-with-payment.onrender.com
+VITE_SOCKET_URL=https://groupchat-with-payment.onrender.com
 VITE_APP_NAME=Group Chat App
 VITE_APP_VERSION=1.0.0 
