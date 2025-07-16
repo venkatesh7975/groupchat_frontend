@@ -84,7 +84,7 @@ export const userAPI = {
   updateProfile: (profileData) => api.put('/api/user/profile', profileData),
   
   // Upload profile picture
-  uploadProfilePic: (formData) => api.post('/api/user/upload-profile-pic', formData, {
+  uploadProfilePic: (formData) => api.put('/api/user/profile/picture', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

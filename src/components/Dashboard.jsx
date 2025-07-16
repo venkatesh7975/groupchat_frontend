@@ -74,12 +74,16 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    console.log('📁 File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+    
     setUploading(true);
     const formData = new FormData();
     formData.append('profilePic', file);
 
     try {
+      console.log('📤 Uploading profile picture...');
       const response = await userAPI.uploadProfilePic(formData);
+      console.log('✅ Upload successful:', response.data);
 
       setProfilePic(response.data.profilePic);
       if (onUserUpdate) {
@@ -88,6 +92,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
       setMessage('Profile picture updated successfully!');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
+      console.error('❌ Upload failed:', error.response?.data || error.message);
       setMessage(error.response?.data?.message || 'Failed to upload profile picture');
     } finally {
       setUploading(false);
