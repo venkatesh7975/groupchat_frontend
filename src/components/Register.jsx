@@ -279,4 +279,4 @@ const Register = ({ onRegister, authStep, setAuthStep }) => {
   );
 };
 
-export default Register; 
+export default Register; //This is Register interface
