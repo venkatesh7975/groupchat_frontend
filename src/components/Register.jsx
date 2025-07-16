@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { authAPI, apiUtils } from '../api';
 import './Auth.css';
 
 const Register = ({ onRegister, authStep, setAuthStep }) => {
@@ -66,7 +66,7 @@ const Register = ({ onRegister, authStep, setAuthStep }) => {
     }
 
     try {
-      const response = await axios.post('https://groupchat-with-payment.onrender.com/api/auth/register', {
+      const response = await authAPI.register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -89,10 +89,15 @@ const Register = ({ onRegister, authStep, setAuthStep }) => {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/auth/verify-otp', {
+      const response = await authAPI.verifyOTP({
         email: email,
         otp: otp
       });
+      
+      // Store token if provided
+      if (response.data.token) {
+        apiUtils.setToken(response.data.token);
+      }
       
       onRegister(response.data.user);
       setMessage('Registration successful!');
@@ -108,7 +113,7 @@ const Register = ({ onRegister, authStep, setAuthStep }) => {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/auth/register', {
+      const response = await authAPI.register({
         name: formData.name,
         email: email,
         password: formData.password,

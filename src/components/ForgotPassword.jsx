@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { authAPI } from '../api';
 import './Auth.css';
 
 const ForgotPassword = () => {
@@ -16,7 +16,7 @@ const ForgotPassword = () => {
     setMessage('');
 
     try {
-      const response = await axios.post('https://groupchat-with-payment.onrender.com/api/auth/forgot-password', { email });
+      const response = await authAPI.forgotPassword(email);
       setMessage(response.data.message);
       setOtpSent(true);
     } catch (error) {
@@ -32,7 +32,7 @@ const ForgotPassword = () => {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/auth/verify-reset-otp', { email, otp });
+      const response = await authAPI.verifyResetOTP({ email, otp });
       setMessage(response.data.message);
       // Redirect to reset password page
       window.location.href = `/reset-password?email=${email}&otp=${otp}`;

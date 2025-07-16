@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import axios from 'axios';
+import { chatAPI, apiUtils } from '../api';
 import config from '../config/env';
 import './GroupChat.css';
 
@@ -18,10 +18,16 @@ const GroupChat = ({ user }) => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    console.log('GroupChat useEffect - user:', user?.name, 'isGroupMember:', user?.isGroupMember);
+    console.log('🔍 GroupChat useEffect - user:', user?.name, 'isGroupMember:', user?.isGroupMember);
+    console.log('🔍 User object:', user);
     
-    if (!user || !user.isGroupMember) {
-      console.log('User not authenticated or not a group member');
+    if (!user) {
+      console.log('❌ No user object provided to GroupChat');
+      return;
+    }
+    
+    if (!user.isGroupMember) {
+      console.log('❌ User is not a group member');
       return;
     }
 
@@ -29,7 +35,7 @@ const GroupChat = ({ user }) => {
     loadExistingMessages();
 
     // Connect to Socket.IO
-    const token = getCookie('token') || localStorage.getItem('token');
+    const token = getCookie('token') || apiUtils.getToken();
     console.log('Socket connection - token present:', !!token);
     console.log('Token value:', token ? token.substring(0, 20) + '...' : 'null');
     
@@ -114,9 +120,7 @@ const GroupChat = ({ user }) => {
   const loadExistingMessages = async () => {
     setLoadingMessages(true);
     try {
-      const response = await axios.get('https://groupchat-with-payment.onrender.com/api/chat/messages', {
-        withCredentials: true
-      });
+      const response = await chatAPI.getMessages();
       
       if (response.data.messages) {
         setMessages(response.data.messages);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { authAPI, apiUtils } from '../api';
 import './Auth.css';
 
 const getCookie = (name) => {
@@ -33,11 +33,14 @@ const Login = ({ onLogin, authStep, setAuthStep }) => {
     setMessage('');
 
     try {
-        const response = await axios.post('https://groupchat-with-payment.onrender.com/api/auth/login', formData);
-        setEmail(formData.email);
+      console.log('🔐 Attempting login for:', formData.email);
+      const response = await authAPI.login(formData);
+      setEmail(formData.email);
+      console.log('📧 OTP sent to email:', formData.email);
       setMessage(response.data.message);
       setAuthStep('otp');
     } catch (error) {
+      console.error('❌ Login failed:', error.response?.data?.message);
       setMessage(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
@@ -50,7 +53,7 @@ const Login = ({ onLogin, authStep, setAuthStep }) => {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/auth/verify-otp', {
+      const response = await authAPI.verifyOTP({
         email: email,
         otp: otp
       });
@@ -60,11 +63,18 @@ const Login = ({ onLogin, authStep, setAuthStep }) => {
       
       // Store token in localStorage as backup
       const token = response.data.token || getCookie('token');
+      console.log('Token from response:', response.data.token ? 'present' : 'missing');
+      console.log('Token from cookie:', getCookie('token') ? 'present' : 'missing');
+      
       if (token) {
-        localStorage.setItem('token', token);
+        apiUtils.setToken(token);
         console.log('Token stored in localStorage');
+        console.log('Token verification - isAuthenticated:', apiUtils.isAuthenticated());
+      } else {
+        console.warn('No token received from server');
       }
       
+      console.log('Login successful, user data:', response.data.user);
       onLogin(response.data.user);
       setMessage('Login successful!');
     } catch (error) {
@@ -80,7 +90,7 @@ const Login = ({ onLogin, authStep, setAuthStep }) => {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/auth/login', {
+      const response = await authAPI.login({
         email: email,
         password: formData.password
       });

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { userAPI, paymentAPI, authAPI, apiUtils } from '../api';
 import './Dashboard.css';
 
 const Dashboard = ({ user, onUserUpdate, onLogout }) => {
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
   const [profilePic, setProfilePic] = useState(user?.profilePic || '');
@@ -25,9 +27,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
 
   const checkPaymentStatus = async () => {
     try {
-      const response = await axios.get('https://groupchat-with-payment.onrender.com/api/payment/status', {
-        withCredentials: true
-      });
+      const response = await paymentAPI.getPaymentStatus();
       
       if (response.data.isGroupMember && onUserUpdate) {
         onUserUpdate({ ...user, isGroupMember: true });
@@ -57,9 +57,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
     }
 
     try {
-      const response = await axios.put('https://groupchat-with-payment.onrender.com/api/user/profile', { name }, {
-        withCredentials: true
-      });
+      const response = await userAPI.updateProfile({ name });
       
       if (onUserUpdate) {
         onUserUpdate(response.data.user);
@@ -81,12 +79,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
     formData.append('profilePic', file);
 
     try {
-      const response = await axios.put('https://groupchat-with-payment.onrender.com/api/user/profile/picture', formData, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const response = await userAPI.uploadProfilePic(formData);
 
       setProfilePic(response.data.profilePic);
       if (onUserUpdate) {
@@ -107,9 +100,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
 
     try {
       // Create payment order
-      const orderResponse = await axios.post('https://groupchat-with-payment.onrender.com/api/payment/create-order', {}, {
-        withCredentials: true
-      });
+      const orderResponse = await paymentAPI.createOrder({});
 
       const { orderId, amount, currency, keyId } = orderResponse.data;
 
@@ -124,12 +115,10 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
         handler: async function (response) {
           try {
             // Verify payment on backend
-            const verifyResponse = await axios.post('https://groupchat-with-payment.onrender.com/api/payment/verify', {
+            const verifyResponse = await paymentAPI.verifyPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature
-            }, {
-              withCredentials: true
             });
 
             if (onUserUpdate) {
@@ -173,15 +162,10 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
-      await axios.post('/api/auth/logout', {}, {
-        withCredentials: true
-      });
+      await authAPI.logout();
       
-      // Clear localStorage
-      localStorage.removeItem('token');
-      
-      // Clear cookies
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      // Clear client-side storage
+      apiUtils.clearAuth();
       
       if (onLogout) {
         onLogout();
@@ -189,8 +173,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
     } catch (error) {
       console.error('Logout error:', error);
       // Still logout even if backend call fails
-      localStorage.removeItem('token');
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      apiUtils.clearAuth();
       if (onLogout) {
         onLogout();
       }
@@ -321,7 +304,7 @@ const Dashboard = ({ user, onUserUpdate, onLogout }) => {
               <div className="status-badge success">✅ Group Member</div>
               <p>You have access to the group chat!</p>
               <button 
-                onClick={() => window.location.href = '/group-chat'}
+                onClick={() => navigate('/group-chat')}
                 className="join-chat-btn"
               >
                 Open Group Chat
